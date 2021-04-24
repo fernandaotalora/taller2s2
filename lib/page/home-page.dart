@@ -159,40 +159,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           child: Text("C")),
                       ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              var datos = operaciones.split(" ");
-                              double num1 = double.parse(datos[0]);
-                              double num2 = double.parse(datos[2]);
-                              double resultado = 0;
-                              switch (datos[1].trim()) {
-                                case "+":
-                                  resultado = num1 + num2;
-                                  break;
-                                case "-":
-                                  resultado = num1 - num2;
-                                  break;
-                                case "x":
-                                  resultado = num1 * num2;
-                                  break;
-                                case "/":
-                                  if (num2 > 0) {
-                                    resultado = num1 / num2;
-                                  } else {
-                                    resultado = 0;
-                                  }
-                                  break;
-                                default:
-                                  resultado = 0;
-                              }
-                              setState(() {
-                                String op = datos[1];
-                                resultOperacion +=
-                                    "$num1 $op $num2 = $resultado \n\n";
-                              });
-                            });
-                          },
-                          child: Text("=")),
+                          onPressed: _calculoOperaciones, child: Text("=")),
                       ElevatedButton(
                           onPressed: () {
                             setState(() {
@@ -205,5 +172,36 @@ class _HomePageState extends State<HomePage> {
             )),
       ],
     );
+  }
+
+  void _calculoOperaciones() {
+    var datos = operaciones.split(" ");
+    double num1 = double.parse(datos[0]);
+    double num2 = double.parse(datos[2]);
+    double resultado = 0;
+    switch (datos[1].trim()) {
+      case "+":
+        resultado = num1 + num2;
+        break;
+      case "-":
+        resultado = num1 - num2;
+        break;
+      case "x":
+        resultado = num1 * num2;
+        break;
+      case "/":
+        if (num2 > 0) {
+          resultado = num1 / num2;
+        } else {
+          resultado = 0;
+        }
+        break;
+      default:
+        resultado = 0;
+    }
+    setState(() {
+      String op = datos[1];
+      resultOperacion += "$num1 $op $num2 = $resultado \n\n";
+    });
   }
 }
