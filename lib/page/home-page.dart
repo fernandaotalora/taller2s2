@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +11,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String operaciones = "";
   String resultOperacion = "";
+  List<Text> listResultado = [];
+  var operadores = ["r", "p", "/", "x", "+", "-"];
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +30,18 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: Container(
             color: Colors.red,
-            child: Row(
-              children: [Text(resultOperacion)],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: listResultado,
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -176,32 +190,72 @@ class _HomePageState extends State<HomePage> {
 
   void _calculoOperaciones() {
     var datos = operaciones.split(" ");
-    int num1 = int.parse(datos[0]);
-    int num2 = int.parse(datos[2]);
-    double resultado = 0;
-    switch (datos[1].trim()) {
-      case "+":
-        resultado = num1.toDouble() + num2.toDouble();
-        break;
-      case "-":
-        resultado = num1.toDouble() - num2.toDouble();
-        break;
-      case "x":
-        resultado = num1.toDouble() * num2.toDouble();
-        break;
-      case "/":
-        if (num2 > 0) {
-          resultado = num1 / num2;
-        } else {
-          resultado = 0;
+    double res = 0;
+    int auxp = 0;
+
+    for (int j = 0; j < operadores.length; j++) {
+      for (int i = 0; i < datos.length; i++) {
+        if (operadores[j] == datos[i]) {
+          if (operadores[j] == "r") {
+            res = sqrt(int.parse(datos[i + 1]));
+          }
+
+          if (operadores[j] == "p") {
+            res = pow(int.parse(datos[i + 1]), 2);
+          }
+
+          if (operadores[j] == "/") {
+            if (res == 0) {
+              res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
+              auxp = i;
+            }
+          }
+
+          if (operadores[j] == "x") {
+            if (res == 0) {
+              res = double.parse(datos[i - 1]) * double.parse(datos[i + 1]);
+              auxp = i;
+            } else {
+              if (i < auxp) {
+                res = res * double.parse(datos[i - 1]);
+              } else {
+                res = res * double.parse(datos[i + 1]);
+              }
+            }
+          }
+
+          if (operadores[j] == "+") {
+            if (res == 0) {
+              res = double.parse(datos[i - 1]) + double.parse(datos[i + 1]);
+              auxp = i;
+            } else {
+              if (i < auxp) {
+                res = res + double.parse(datos[i - 1]);
+              } else {
+                res = res + double.parse(datos[i + 1]);
+              }
+            }
+          }
+
+          if (operadores[j] == "-") {
+            if (res == 0) {
+              res = double.parse(datos[i - 1]) - double.parse(datos[i + 1]);
+              auxp = i;
+            } else {
+              if (i < auxp) {
+                res = res - double.parse(datos[i - 1]);
+              } else {
+                res = res - double.parse(datos[i + 1]);
+              }
+            }
+          }
         }
-        break;
-      default:
-        resultado = 0;
+      }
     }
+    print(res);
+
     setState(() {
-      String op = datos[1];
-      resultOperacion += "$num1 $op $num2 = $resultado \n\n";
+      listResultado.add(Text("$operaciones = $res"));
     });
   }
 }
