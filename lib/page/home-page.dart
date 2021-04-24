@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:taller2s2/page/resultados.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   String operaciones = "";
   String resultOperacion = "";
   List<Text> listResultado = [];
-  var operadores = ["r", "p", "/", "x", "+", "-"];
+  var operadores = ["√", "^2", "%", "/", "x", "+", "-"];
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: listResultado,
                   )
@@ -58,6 +59,43 @@ class _HomePageState extends State<HomePage> {
             color: Colors.yellow,
             child: Column(
               children: [
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ResultadosPage(
+                                        listadoResultados: listResultado)));
+                            /*setState(() {
+                              operaciones += ".";
+                            });*/
+                          },
+                          child: Text(".")),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              operaciones += " % ";
+                            });
+                          },
+                          child: Text("%")),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              operaciones += " √ ";
+                            });
+                          },
+                          child: Text("√")),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              operaciones += " ^2 ";
+                            });
+                          },
+                          child: Text("x^2"))
+                    ]),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -196,25 +234,58 @@ class _HomePageState extends State<HomePage> {
     for (int j = 0; j < operadores.length; j++) {
       for (int i = 0; i < datos.length; i++) {
         if (operadores[j] == datos[i]) {
-          if (operadores[j] == "r") {
+          if (operadores[j] == "√") {
             res = sqrt(int.parse(datos[i + 1]));
+            auxp = i + 1;
           }
 
-          if (operadores[j] == "p") {
+          if (operadores[j] == "^2") {
             res = pow(int.parse(datos[i + 1]), 2);
+            auxp = i + 1;
+          }
+
+          if (operadores[j] == "%") {
+            if (res == 0) {
+              res = (double.parse(datos[i - 1]) * 100) /
+                  double.parse(datos[i + 1]);
+            } else {
+              if (i < auxp) {
+                res = (res * 100) / double.parse(datos[i - 1]);
+              } else {
+                res = (res * 100) / double.parse(datos[i + 1]);
+              }
+            }
+            auxp = i;
           }
 
           if (operadores[j] == "/") {
             if (res == 0) {
-              res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
-              auxp = i;
+              if (int.parse(datos[i + 1]) != 0) {
+                res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
+              } else {
+                operaciones += "\n Error no se puede dividir por 0";
+              }
+            } else {
+              if (i < auxp) {
+                if (int.parse(datos[i + 1]) != 0) {
+                  res = res / double.parse(datos[i - 1]);
+                } else {
+                  operaciones += "\n Error no se puede dividir por 0";
+                }
+              } else {
+                if (int.parse(datos[i + 1]) != 0) {
+                  res = res / double.parse(datos[i + 1]);
+                } else {
+                  operaciones += "\n Error no se puede dividir por 0";
+                }
+              }
             }
+            auxp = i;
           }
 
           if (operadores[j] == "x") {
             if (res == 0) {
               res = double.parse(datos[i - 1]) * double.parse(datos[i + 1]);
-              auxp = i;
             } else {
               if (i < auxp) {
                 res = res * double.parse(datos[i - 1]);
@@ -222,12 +293,12 @@ class _HomePageState extends State<HomePage> {
                 res = res * double.parse(datos[i + 1]);
               }
             }
+            auxp = i;
           }
 
           if (operadores[j] == "+") {
             if (res == 0) {
               res = double.parse(datos[i - 1]) + double.parse(datos[i + 1]);
-              auxp = i;
             } else {
               if (i < auxp) {
                 res = res + double.parse(datos[i - 1]);
@@ -235,12 +306,12 @@ class _HomePageState extends State<HomePage> {
                 res = res + double.parse(datos[i + 1]);
               }
             }
+            // auxp = i;
           }
 
           if (operadores[j] == "-") {
             if (res == 0) {
               res = double.parse(datos[i - 1]) - double.parse(datos[i + 1]);
-              auxp = i;
             } else {
               if (i < auxp) {
                 res = res - double.parse(datos[i - 1]);
@@ -248,6 +319,7 @@ class _HomePageState extends State<HomePage> {
                 res = res - double.parse(datos[i + 1]);
               }
             }
+            // auxp = i;
           }
         }
       }
