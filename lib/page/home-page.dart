@@ -176,18 +176,18 @@ class _HomePageState extends State<HomePage> {
 
   void _calculoOperaciones() {
     var datos = operaciones.split(" ");
-    double num1 = double.parse(datos[0]);
-    double num2 = double.parse(datos[2]);
+    int num1 = int.parse(datos[0]);
+    int num2 = int.parse(datos[2]);
     double resultado = 0;
     switch (datos[1].trim()) {
       case "+":
-        resultado = num1 + num2;
+        resultado = num1.toDouble() + num2.toDouble();
         break;
       case "-":
-        resultado = num1 - num2;
+        resultado = num1.toDouble() - num2.toDouble();
         break;
       case "x":
-        resultado = num1 * num2;
+        resultado = num1.toDouble() * num2.toDouble();
         break;
       case "/":
         if (num2 > 0) {
