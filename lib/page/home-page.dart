@@ -227,107 +227,133 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _calculoOperaciones() {
-    var datos = operaciones.split(" ");
+    String msj = "";
     double res = 0;
-    int auxp = 0;
+    try {
+      var datos = operaciones.split(" ");
+      int auxp = 0;
 
-    for (int j = 0; j < operadores.length; j++) {
-      for (int i = 0; i < datos.length; i++) {
-        if (operadores[j] == datos[i]) {
-          if (operadores[j] == "√") {
-            res = sqrt(int.parse(datos[i + 1]));
-            auxp = i + 1;
-          }
-
-          if (operadores[j] == "^2") {
-            res = pow(int.parse(datos[i + 1]), 2);
-            auxp = i + 1;
-          }
-
-          if (operadores[j] == "%") {
-            if (res == 0) {
-              res = (double.parse(datos[i - 1]) * 100) /
-                  double.parse(datos[i + 1]);
-            } else {
-              if (i < auxp) {
-                res = (res * 100) / double.parse(datos[i - 1]);
-              } else {
-                res = (res * 100) / double.parse(datos[i + 1]);
-              }
+      for (int j = 0; j < operadores.length; j++) {
+        for (int i = 0; i < datos.length; i++) {
+          if (operadores[j] == datos[i]) {
+            if (operadores[j] == "√") {
+              res = sqrt(int.parse(datos[i + 1]));
+              auxp = i + 1;
             }
-            auxp = i;
-          }
 
-          if (operadores[j] == "/") {
-            if (res == 0) {
-              if (int.parse(datos[i + 1]) != 0) {
-                res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
-              } else {
-                operaciones += "\n Error no se puede dividir por 0";
-              }
-            } else {
-              if (i < auxp) {
+            if (operadores[j] == "^2") {
+              res = pow(double.parse(datos[i - 1]), 2);
+              auxp = i;
+            }
+
+            if (operadores[j] == "%") {
+              res = double.parse(datos[i - 1]) / 100;
+              auxp = i;
+            }
+
+            if (operadores[j] == "/") {
+              if (res == 0) {
                 if (int.parse(datos[i + 1]) != 0) {
-                  res = res / double.parse(datos[i - 1]);
+                  res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
                 } else {
                   operaciones += "\n Error no se puede dividir por 0";
                 }
               } else {
-                if (int.parse(datos[i + 1]) != 0) {
-                  res = res / double.parse(datos[i + 1]);
+                if (i < auxp) {
+                  if (int.parse(datos[i + 1]) != 0) {
+                    res = res / double.parse(datos[i - 1]);
+                  } else {
+                    operaciones += "\n Error no se puede dividir por 0";
+                  }
                 } else {
-                  operaciones += "\n Error no se puede dividir por 0";
+                  if (int.parse(datos[i + 1]) != 0) {
+                    res = res / double.parse(datos[i + 1]);
+                  } else {
+                    operaciones += "\n Error no se puede dividir por 0";
+                  }
                 }
               }
+              auxp = i;
             }
-            auxp = i;
-          }
 
-          if (operadores[j] == "x") {
-            if (res == 0) {
-              res = double.parse(datos[i - 1]) * double.parse(datos[i + 1]);
-            } else {
-              if (i < auxp) {
-                res = res * double.parse(datos[i - 1]);
+            if (operadores[j] == "x") {
+              if (res == 0) {
+                res = double.parse(datos[i - 1]) * double.parse(datos[i + 1]);
               } else {
-                res = res * double.parse(datos[i + 1]);
+                if (i < auxp) {
+                  res = res * double.parse(datos[i - 1]);
+                } else {
+                  res = res * double.parse(datos[i + 1]);
+                }
               }
+              auxp = i;
             }
-            auxp = i;
-          }
 
-          if (operadores[j] == "+") {
-            if (res == 0) {
-              res = double.parse(datos[i - 1]) + double.parse(datos[i + 1]);
-            } else {
-              if (i < auxp) {
-                res = res + double.parse(datos[i - 1]);
+            if (operadores[j] == "+") {
+              if (res == 0) {
+                res = double.parse(datos[i - 1]) + double.parse(datos[i + 1]);
               } else {
-                res = res + double.parse(datos[i + 1]);
+                if (i < auxp) {
+                  res = res + double.parse(datos[i - 1]);
+                } else {
+                  res = res + double.parse(datos[i + 1]);
+                }
               }
+              // auxp = i;
             }
-            // auxp = i;
-          }
 
-          if (operadores[j] == "-") {
-            if (res == 0) {
-              res = double.parse(datos[i - 1]) - double.parse(datos[i + 1]);
-            } else {
-              if (i < auxp) {
-                res = res - double.parse(datos[i - 1]);
+            if (operadores[j] == "-") {
+              if (res == 0) {
+                res = double.parse(datos[i - 1]) - double.parse(datos[i + 1]);
               } else {
-                res = res - double.parse(datos[i + 1]);
+                if (i < auxp) {
+                  res = res - double.parse(datos[i - 1]);
+                } else {
+                  res = res - double.parse(datos[i + 1]);
+                }
               }
+              // auxp = i;
             }
-            // auxp = i;
           }
         }
       }
-    }
-    print(res);
+      setState(() {
+        listResultado.add(Text("$operaciones = $res"));
+      });
+    } on FormatException catch (e) {
+      _showMyDialog("Expresion mal formada");
+    } catch (e) {
+      print("Error $e");
+    } finally {}
+  }
 
-    setState(() {
-      listResultado.add(Text("$operaciones = $res"));
-    });
+  Future<void> _showMyDialog(msj) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Error',
+            style: TextStyle(color: Colors.red),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(msj),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
