@@ -14,6 +14,7 @@ class _HomePageState extends State<HomePage> {
   String resultOperacion = "";
   List<Text> listResultado = [];
   var operadores = ["√", "^2", "%", "/", "x", "+", "-"];
+  String aux = "";
 
   @override
   Widget build(BuildContext context) {
@@ -206,6 +207,7 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             setState(() {
                               operaciones = "";
+                              aux = "";
                               //   resultOperacion = "";
                             });
                           },
@@ -229,102 +231,116 @@ class _HomePageState extends State<HomePage> {
   void _calculoOperaciones() {
     String msj = "";
     double res = 0;
+    var ver = false;
+
     try {
       var datos = operaciones.split(" ");
       int auxp = 0;
 
-      for (int j = 0; j < operadores.length; j++) {
-        for (int i = 0; i < datos.length; i++) {
-          if (operadores[j] == datos[i]) {
-            if (operadores[j] == "√") {
-              res = sqrt(int.parse(datos[i + 1]));
-              auxp = i + 1;
-            }
+      if (datos.length == 1) {
+        if (datos[0] != aux) {
+          aux = msj = datos[0];
+          ver = true;
+        }
+      } else {
+        for (int j = 0; j < operadores.length; j++) {
+          for (int i = 0; i < datos.length; i++) {
+            if (operadores[j] == datos[i]) {
+              if (operadores[j] == "√") {
+                res = sqrt(int.parse(datos[i + 1]));
+                auxp = i + 1;
+              }
 
-            if (operadores[j] == "^2") {
-              res = pow(double.parse(datos[i - 1]), 2);
-              auxp = i;
-            }
+              if (operadores[j] == "^2") {
+                res = pow(double.parse(datos[i - 1]), 2);
+                auxp = i;
+              }
 
-            if (operadores[j] == "%") {
-              res = double.parse(datos[i - 1]) / 100;
-              auxp = i;
-            }
+              if (operadores[j] == "%") {
+                res = double.parse(datos[i - 1]) / 100;
+                auxp = i;
+              }
 
-            if (operadores[j] == "/") {
-              if (res == 0) {
-                if (int.parse(datos[i + 1]) != 0) {
-                  res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
-                } else {
-                  operaciones += "\n Error no se puede dividir por 0";
-                }
-              } else {
-                if (i < auxp) {
+              if (operadores[j] == "/") {
+                if (res == 0) {
                   if (int.parse(datos[i + 1]) != 0) {
-                    res = res / double.parse(datos[i - 1]);
+                    res = int.parse(datos[i - 1]) / int.parse(datos[i + 1]);
                   } else {
                     operaciones += "\n Error no se puede dividir por 0";
                   }
                 } else {
-                  if (int.parse(datos[i + 1]) != 0) {
-                    res = res / double.parse(datos[i + 1]);
+                  if (i < auxp) {
+                    if (int.parse(datos[i + 1]) != 0) {
+                      res = res / double.parse(datos[i - 1]);
+                    } else {
+                      operaciones += "\n Error no se puede dividir por 0";
+                    }
                   } else {
-                    operaciones += "\n Error no se puede dividir por 0";
+                    if (int.parse(datos[i + 1]) != 0) {
+                      res = res / double.parse(datos[i + 1]);
+                    } else {
+                      operaciones += "\n Error no se puede dividir por 0";
+                    }
                   }
                 }
+                auxp = i;
               }
-              auxp = i;
-            }
 
-            if (operadores[j] == "x") {
-              if (res == 0) {
-                res = double.parse(datos[i - 1]) * double.parse(datos[i + 1]);
-              } else {
-                if (i < auxp) {
-                  res = res * double.parse(datos[i - 1]);
+              if (operadores[j] == "x") {
+                if (res == 0) {
+                  res = double.parse(datos[i - 1]) * double.parse(datos[i + 1]);
                 } else {
-                  res = res * double.parse(datos[i + 1]);
+                  if (i < auxp) {
+                    res = res * double.parse(datos[i - 1]);
+                  } else {
+                    res = res * double.parse(datos[i + 1]);
+                  }
                 }
+                auxp = i;
               }
-              auxp = i;
-            }
 
-            if (operadores[j] == "+") {
-              if (res == 0) {
-                res = double.parse(datos[i - 1]) + double.parse(datos[i + 1]);
-              } else {
-                if (i < auxp) {
-                  res = res + double.parse(datos[i - 1]);
+              if (operadores[j] == "+") {
+                if (res == 0) {
+                  res = double.parse(datos[i - 1]) + double.parse(datos[i + 1]);
                 } else {
-                  res = res + double.parse(datos[i + 1]);
+                  if (i < auxp) {
+                    res = res + double.parse(datos[i - 1]);
+                  } else {
+                    res = res + double.parse(datos[i + 1]);
+                  }
                 }
+                // auxp = i;
               }
-              // auxp = i;
-            }
 
-            if (operadores[j] == "-") {
-              if (res == 0) {
-                res = double.parse(datos[i - 1]) - double.parse(datos[i + 1]);
-              } else {
-                if (i < auxp) {
-                  res = res - double.parse(datos[i - 1]);
+              if (operadores[j] == "-") {
+                if (res == 0) {
+                  res = double.parse(datos[i - 1]) - double.parse(datos[i + 1]);
                 } else {
-                  res = res - double.parse(datos[i + 1]);
+                  if (i < auxp) {
+                    res = res - double.parse(datos[i - 1]);
+                  } else {
+                    res = res - double.parse(datos[i + 1]);
+                  }
                 }
+                // auxp = i;
               }
-              // auxp = i;
             }
           }
         }
+        msj = "$operaciones = $res";
+        ver = true;
       }
-      setState(() {
-        listResultado.add(Text("$operaciones = $res"));
-      });
     } on FormatException catch (e) {
       _showMyDialog("Expresion mal formada");
     } catch (e) {
       print("Error $e");
-    } finally {}
+    } finally {
+      if (ver) {
+        setState(() {
+          listResultado.add(Text(msj));
+        });
+      }
+    }
   }
 
   Future<void> _showMyDialog(msj) async {
